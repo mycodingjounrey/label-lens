@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10131c">
+  <meta name="description" content="A lightweight workspace for reviewing data labels, catching ambiguous examples, and improving annotation quality.">
+  <title>LabelLens — Annotation QA workspace</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#" aria-label="LabelLens home"><span class="brand-mark">L</span><span>label<span class="brand-light">lens</span></span></a>
+      <div class="workspace-label">WORKSPACE</div>
+      <button class="workspace-switch"><span class="workspace-icon">✳</span><span><strong>Product feedback</strong><small>Annotation project</small></span><span class="chevron">⌄</span></button>
+      <div class="nav-label">WORKSPACE</div>
+      <nav class="main-nav" aria-label="Main navigation">
+        <a class="nav-item active" href="#queue"><span>▤</span>Review queue <span class="nav-count" id="nav-count">0</span></a>
+        <a class="nav-item" href="#guidelines"><span>☷</span>Guidelines</a>
+      </nav>
+      <div class="side-divider"></div>
+      <div class="nav-label">LABEL TAXONOMY</div>
+      <div class="taxonomy" id="taxonomy"></div>
+      <div class="sidebar-bottom"><div class="avatar">JD</div><div><strong>Jamie Davis</strong><small>Annotator</small></div><button class="more-button" aria-label="More account options">···</button></div>
+    </aside>
+
+    <main class="main-content" id="queue">
+      <header class="topbar"><div class="breadcrumb">Projects <span>/</span> Product feedback <span>/</span> <strong>Review queue</strong></div><div class="top-actions"><span class="saved-indicator"><i></i> Saved locally</span><button class="button button-secondary" id="import-button">↑ <span>Import data</span></button><input id="file-input" type="file" accept=".json,.csv" hidden><button class="button button-primary" id="export-button">↓ <span>Export report</span></button></div></header>
+      <section class="page-heading"><div><div class="eyebrow"><span class="eyebrow-dot"></span> ANNOTATION QUALITY WORKSPACE</div><h1>Review queue</h1><p>Make every label count. Review examples, flag edge cases, and keep your dataset consistent.</p></div><button class="button button-add" id="add-example">＋ <span>Add example</span></button></section>
+
+      <section class="metrics-grid" aria-label="Quality metrics">
+        <article class="metric-card"><div class="metric-top"><span>Total examples</span><span class="metric-icon icon-violet">▤</span></div><div class="metric-value" id="metric-total">0</div><div class="metric-foot">Across this review batch</div></article>
+        <article class="metric-card"><div class="metric-top"><span>Reviewed</span><span class="metric-icon icon-green">✓</span></div><div class="metric-value"><span id="metric-reviewed">0</span><small id="reviewed-percent">0% complete</small></div><div class="progress-track"><div class="progress-fill" id="review-progress"></div></div></article>
+        <article class="metric-card"><div class="metric-top"><span>Needs attention</span><span class="metric-icon icon-amber">⚑</span></div><div class="metric-value" id="metric-attention">0</div><div class="metric-foot">Flagged or low confidence</div></article>
+        <article class="metric-card"><div class="metric-top"><span>Label consistency</span><span class="metric-icon icon-blue">◈</span></div><div class="metric-value"><span id="metric-consistency">—</span><small>rule-based estimate</small></div><div class="metric-foot">Based on confidence &amp; review status</div></article>
+      </section>
+
+      <section class="review-section">
+        <div class="section-heading"><div><h2>Examples <span class="subtle-count" id="examples-count">0</span></h2><p>Review each item against the project guidelines.</p></div><div class="list-controls"><label class="search-box"><span>⌕</span><input id="search-input" type="search" placeholder="Search examples…" aria-label="Search examples"></label><select id="filter-select" aria-label="Filter examples"><option value="all">All examples</option><option value="unreviewed">Unreviewed</option><option value="needs-review">Needs review</option><option value="reviewed">Reviewed</option></select></div></div>
+        <div class="example-list" id="example-list"></div>
+        <div class="empty-state" id="empty-state" hidden><div class="empty-icon">⌕</div><h3>No examples found</h3><p>Try a different search or add a new example to your queue.</p></div>
+      </section>
+      <footer class="page-footer"><span>Showing <strong id="showing-count">0</strong> of <strong id="total-count">0</strong> examples</span><span>LabelLens <span class="footer-dot">·</span> Your data stays in this browser</span></footer>
+    </main>
+  </div>
+
+  <dialog id="example-dialog" class="modal"><form method="dialog" id="example-form"><div class="modal-heading"><div><div class="eyebrow">NEW ANNOTATION</div><h2>Add an example</h2></div><button class="close-button" value="cancel" aria-label="Close">×</button></div><label class="form-label">Example text<textarea id="new-text" required rows="4" placeholder="Paste the text you'd like to label…"></textarea></label><div class="form-row"><label class="form-label">Assigned label<select id="new-label"></select></label><label class="form-label">Confidence<select id="new-confidence"><option value="0.95">High</option><option value="0.75">Medium</option><option value="0.45">Low</option></select></label></div><label class="form-label">Annotator note <input id="new-note" placeholder="Optional context or rationale"></label><div class="modal-actions"><button class="button button-secondary" value="cancel">Cancel</button><button class="button button-primary" id="save-example" value="default">Add to queue</button></div></form></dialog>
+
+  <section class="guidelines-drawer" id="guidelines" aria-label="Project guidelines"><div class="guidelines-inner"><div class="guidelines-header"><div><div class="eyebrow">REFERENCE</div><h2>Labeling guidelines</h2></div><a href="#queue" class="close-guidelines" aria-label="Close guidelines">×</a></div><p class="guidelines-intro">Use the author's primary intent. If a message expresses more than one sentiment, choose the dominant one and leave a note.</p><div class="guideline-item"><span class="label-dot dot-positive"></span><div><strong>Positive</strong><p>Praise, satisfaction, or clear endorsement.</p><small>“This is exactly what I needed!”</small></div></div><div class="guideline-item"><span class="label-dot dot-negative"></span><div><strong>Negative</strong><p>Complaint, frustration, or dissatisfaction.</p><small>“The app keeps crashing.”</small></div></div><div class="guideline-item"><span class="label-dot dot-neutral"></span><div><strong>Neutral</strong><p>Factual, informational, or no clear sentiment.</p><small>“The update shipped on Tuesday.”</small></div></div><div class="guideline-note"><strong>Not sure?</strong><p>Flag ambiguous examples for a second opinion rather than guessing. Consistent uncertainty notes help improve the guidelines.</p></div></div></section>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>
